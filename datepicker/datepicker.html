@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Datepicker - Default functionality</title>
+
+  <!-- jq ui css -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+  <!-- jq style css -->
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <!-- jq -->
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <!-- jq ui -->
+  <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+  <script>
+
+    $( function() {
+        // datepicker 기본설정
+        $.datepicker.setDefaults({
+            // showOn:"both",   // 달력을 표시할 타이밍 (both: focus or button)
+            // buttonImage:"../img/check.png",  // 버튼 이미지 
+            // buttonImageOnly:true,        // 버튼이미지만 표시할지 여부
+            // buttonText:"SelectDate",     // 버튼의 대체 텍스트
+            // minDate : 0 ,    // 오늘 이전 날짜 선택 불가
+            // maxDate : "2021/10/21",     // 해당 날짜 이후 선택불가
+            changeYear:true,    // 연 select box
+            changeMonth:true,   // 월 select box
+            dateFormat: 'yy/mm/dd',
+            prevText: '이전 달',
+            nextText: '다음 달',
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            showMonthAfterYear: true,
+            yearSuffix: '년'
+        });
+
+        // 오늘 날짜 간단히 출력하기
+        $("#today").text(new Date().toLocaleDateString());
+        // $.datepicker.setDefaults($.datepicker.regional['ko']); // 한국어 설정이라고 하는데 안되었음
+
+        // input 값을 datepicker로 설정
+        $( "#datepicker,#datepicker2,#datepicker3" ).datepicker({
+            // 선택된 날짜 가져오기
+            onSelect:function(dateText){
+                console.log("선택된날짜:",dateText);
+
+                var arr=dateText.split("/");
+                var year=arr[0];
+                var month=arr[1];
+                var date=arr[2];
+                $("#year").text(year);
+                $("#month").text(month);
+                $("#date").text(date);
+                // 오늘의 날짜
+                // var selectDatepicker = new Date();
+                // var year = selectDatepicker.getFullYear();
+                // var month = selectDatepicker.getMonth()+1;
+                // var date = selectDatepicker.getDate();
+                // var dayLabel = selectDatepicker.getDay()
+                // console.log("오늘의 날짜:",year+"/"+month+"/"+date+"/"+dayLabel)
+
+                //요일
+                var week=new Array("일","월","화","수","목","금","토")
+                var selectDay=new Date(dateText).getDay();
+                var todayLabel=week[selectDay];
+                console.log("요일:",todayLabel)
+                $("#day").text(todayLabel)
+                // 오늘의 요일
+                // var today=new Date().getDay();
+                // var todayLabel=week[today];
+                // console.log(todayLabel)
+            }
+        });
+
+
+        // ***** 시작일/종료일 조건걸기 *****
+        // 시작일 : 종료일 이후 날짜 선택불가능
+        // 종료일 : 시작일 이전 날짜 선택불가능
+        $("#fromDate").datepicker({
+            onClose:function(selectedDate){
+                // 시작일의 datePicker가 닫힐 때 종료일의 minDate 를 선택한 시작일로 지정
+                $("#toDate").datepicker("option","minDate",selectedDate);
+            }
+        })
+        $("#toDate").datepicker({
+            onClose:function(selectedDate){
+                // 종료일의 datePicker가 닫힐 때 시작일의 maxDate 를 선택한 종료일로 지정
+                $("#fromDate").datepicker("option","maxDate",selectedDate);
+            }
+        })
+
+
+        // 버튼으로 datepicker 사용하기
+        $("#date3").datepicker({
+            onSelect:function(dateText, inst){
+                console.log(dateText)
+            } // onSelect
+        });
+    } );
+  </script>
+</head>
+<body>
+    <div>
+        날짜를 선택하세요
+        <div>
+            <input type="text" id="datepicker" readonly>
+        </div>
+        year: <p id="year"></p>
+        month: <p id="month"></p>
+        date: <p id="date"></p>
+        day: <p id="day"></p>
+    </div>
+
+    <div>
+        조회기간 : <input type="text" id="datepicker2" readonly> ~ <input type="text" id="datepicker3" readonly>
+    </div>
+
+    <div>
+        <!-- 버튼으로 선택 -->
+        <!-- <input type="text" name="date" id="date3" size="12" /> -->
+        <input type="button" value="날짜를 선택하세요" id="date3"  onclick="$('#date3').datepicker('show');" />
+    </div>
+    <p></p>
+
+    <!-- 시작일/종료일 조건걸기 -->
+    <div>
+        오늘 : <sapn id="today"></sapn>
+        <label for="fromDate">시작일</label>
+        <input type="text" name="fromDate" id="fromDate" readonly>
+        ~
+        <label for="toDate">종료일</label>
+        <input type="text" name="toDate" id="toDate" readonly>
+    </div>
+</body>
+</html>
